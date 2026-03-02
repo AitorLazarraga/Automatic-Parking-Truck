@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor del Camión</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>🚛 Monitor de Sensores del Camión</h1>
+        <p class="subtitle">Vista superior - Monitoreo en tiempo real</p>
+        
+        <div class="controls">
+            <button class="refresh-btn" onclick="location.reload()">🔄 Actualizar Vista</button>
+          
+        </div>
+      <div class="motor-controls">
+    <h2>🎮 Control de Movimiento</h2>
+    <div class="motor-buttons">
+        <button onclick="sendMotor('F')" class="motor-btn forward">⬆ Adelante</button>
+        <button onclick="sendMotor('S')" class="motor-btn stop">⏹ Stop</button>
+        <button onclick="sendMotor('B')" class="motor-btn backward">⬇ Atrás</button>
+      <div class="motor-control">
+    <h3>Move Motor to Position</h3>
+
+    <input type="number" id="angleInput" placeholder="Enter degrees" min="0" max="360">
+
+    <button onclick="sendAngle()">Move</button>
+
+    <p id="angleStatus"></p>
+</div>
+    </div>
+    </div> 
+        <div class="truck-container">
+            <div class="truck-view">
+                <!-- Tractora -->
+                <div class="tractor">
+                    <!-- Sensores laterales tractora -->
+                    <div class="sensor sensor-8" data-sensor="8">
+                        <span class="sensor-label">S8</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    <div class="sensor sensor-9" data-sensor="9">
+                        <span class="sensor-label">S9</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                </div>
+                
+                <!-- Remolque -->
+                <div class="trailer">
+                    <!-- Sensores laterales derecho -->
+                    <div class="sensor sensor-0" data-sensor="0">
+                        <span class="sensor-label">S0</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    <div class="sensor sensor-1" data-sensor="1">
+                        <span class="sensor-label">S1</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    <div class="sensor sensor-2" data-sensor="2">
+                        <span class="sensor-label">S2</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    <div class="sensor sensor-3" data-sensor="3">
+                        <span class="sensor-label">S3</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    
+                    <!-- Sensores laterales izquierdo -->
+                    <div class="sensor sensor-4" data-sensor="4">
+                        <span class="sensor-label">S4</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    <div class="sensor sensor-5" data-sensor="5">
+                        <span class="sensor-label">S5</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    <div class="sensor sensor-6" data-sensor="6">
+                        <span class="sensor-label">S6</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    <div class="sensor sensor-7" data-sensor="7">
+                        <span class="sensor-label">S7</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                    
+                    <!-- Sensor ToF trasero -->
+                    <div class="sensor sensor-tof" data-sensor="ToF">
+                        <span class="sensor-label">ToF</span>
+                        <span class="sensor-value">---</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Leyenda -->
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color active"></div>
+                    <span>Activo (> 50 cm)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color warning"></div>
+                    <span>Advertencia (≤ 50 cm)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color inactive"></div>
+                    <span>Sin datos</span>
+                </div>
+            </div>
+            
+            <!-- Panel de información -->
+            <div class="info-panel">
+                <div class="info-grid" id="infoGrid"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
