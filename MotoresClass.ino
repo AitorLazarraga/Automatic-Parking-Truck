@@ -1,3 +1,8 @@
+#include <Wire.h>
+#include <Adafruit_Sensor.h>
+#include <Adafruit_BNO055.h>
+#include <stdio.h>
+
 #define M1_FRW 34
 #define M1_BCK 35
 #define M1_PWM 10
@@ -21,6 +26,12 @@ void ISR_M2() {
   if (digitalRead(ENC2_B) == HIGH) countM2++;
   else countM2--;
 }
+
+Adafruit_BNO055 bno = Adafruit_BNO055(55, 0x29, &Wire);
+
+// Intervalo de datos IMU, 20Hz para no bloquear respuesta critica motores
+unsigned long lastIMU = 0;
+int imuInterval = 20; // 50 Hz
 
 // Clase Motor
 class Motor {
@@ -110,6 +121,24 @@ class Motor {
     }
 };
 
+void sendIMU() {
+
+  sensors_event_t orientationData , angVelocityData;
+  bno.getEvent(&orientationData, Adafruit_BNO055::VECTOR_EULER);
+  bno.getEvent(&angVelocityData, Adafruit_BNO055::VECTOR_GYROSCOPE);
+
+  float yaw = orientationData.orientation.x;
+  float giro_z = angVelocityData.gyro.z;
+
+  uint8_t system = 0, gyro = 0, accel = 0, mag = 0;
+  bno.getCalibration(&system, &gyro, &accel, &mag);
+  
+  String msg = "IMU," + String(yaw) + ',' + String(giro_z) + ',' + String(system) + ',' + String(gyro) + ',' + String(accel) + ',' + String(mag);
+  // Envio por UART en estilo (IMU,yaw,gyroz,calibsystem,calibgyro,accelgyro,magyro)
+  // Luego en python cambiarlo a dict
+  Serial2.println(msg);
+  Serial.println(msg);
+}
 // Crear instancias de motores
 Motor M1(M1_FRW, M1_BCK, M1_PWM, ENABLE1);
 Motor M2(M2_FRW, M2_BCK, M2_PWM, ENABLE2, ENC2_A, ENC2_B, &countM2);
@@ -117,8 +146,18 @@ Motor M2(M2_FRW, M2_BCK, M2_PWM, ENABLE2, ENC2_A, ENC2_B, &countM2);
 void setup() {
   Serial.begin(115200);
   Serial2.begin(9600);
+
   M1.begin();
   M2.begin();
+
+  Wire.begin();
+
+  if (!bno.begin()) {
+    Serial.println("BNO055 no detectado");
+    while (1);
+  }
+
+  delay(1000);
 }
 
 void loop() {
@@ -152,5 +191,10 @@ void loop() {
       targetAngle = cmd.substring(1).toFloat();
       Serial2.println("OK_G");
     }
+  }
+
+  if (millis() - lastIMU > imuInterval) {
+    lastIMU = millis();
+    sendIMU();
   }
 }
